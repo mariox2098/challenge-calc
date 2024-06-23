@@ -1,9 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 Console.WriteLine("--- Challenge Calculator ---\n");
 var calculator = new Calculator();
-var input = "2,1001,6";
+var input = "//,\n2,ff,100";
 
 var result = calculator.Calculate(input);
 
