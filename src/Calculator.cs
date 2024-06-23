@@ -16,11 +16,7 @@ public class Calculator
 
         foreach (var item in result)
         {
-            if(index >= 2)
-            {
-                throw new ArgumentOutOfRangeException("");
-            }
-            else if(int.TryParse(item, out var parsedInt))
+            if(int.TryParse(item, out var parsedInt))
             {
                 parsedInts.Add(parsedInt);
             }
