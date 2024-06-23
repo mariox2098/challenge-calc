@@ -6,5 +6,5 @@ var input = "//,\n2,ff,100";
 
 var result = calculator.Calculate(input);
 
-Console.WriteLine("Input: " + Regex.Escape(input));
+Console.WriteLine("Input: " + input);
 Console.WriteLine("Output: " + result);

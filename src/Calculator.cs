@@ -1,8 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Text.RegularExpressions;
+
 public class Calculator
 {
-    private List<char> _delimiters = ['\n', ','];
-    private char? _customDelimiter = null;
+    private List<string> _delimiters = ["\n", ","];
+    private string? _customDelimiter = null;
+    private readonly string CustomDelimiterRegex = @"\[(.+?)\]|(.*)";
 
     public Calculator()
     {
@@ -17,11 +20,11 @@ public class Calculator
         return output;
     }
 
-    public char[] GetDelimiters()
+    public string[] GetDelimiters()
     {
         var allDelimiters = _delimiters;
-        if (_customDelimiter != null) { allDelimiters.Add(_customDelimiter.Value); }
-        return allDelimiters.ToArray();
+        if (_customDelimiter != null) { allDelimiters.Add(_customDelimiter); }
+        return allDelimiters.Distinct().ToArray();
     }
     public string ParseCustomDelimiter(string inputString)
     {
@@ -32,7 +35,12 @@ public class Calculator
             var splitString = inputString.Split('\n', 2);
             if (splitString != null && splitString.Length == 2)
             {
-                _customDelimiter = char.Parse(splitString[0].Substring(2));
+                var customDelimiterPart = splitString[0].Substring(2);
+                var r = Regex.Match(customDelimiterPart, CustomDelimiterRegex);
+                if(r.Success)
+                {
+                    _customDelimiter = r.Captures.FirstOrDefault()?.Value.Trim(['[',']']);
+                }
                 newInputString = splitString[1];
             }
         }
@@ -42,7 +50,7 @@ public class Calculator
     private List<int> ParseStringToNumbers(string inputString)
     {
         var parsedInts = new List<int>();
-        var result = inputString.Split(GetDelimiters());
+        var result = inputString.Split(separator: GetDelimiters(), StringSplitOptions.None);
         var index = 0;
 
         var hasNegativeNumbers = false;
