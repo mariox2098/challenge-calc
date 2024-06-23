@@ -1,11 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Text.RegularExpressions;
+using System.Linq;
 
 public class Calculator
 {
     private List<string> _delimiters = ["\n", ","];
-    private string? _customDelimiter = null;
-    private readonly string CustomDelimiterRegex = @"\[(.+?)\]|(.*)";
+    private List<string> _customDelimiters = [];
+    private readonly string CustomDelimiterRegex = @"(?:\[(.+?)\]+)|(.*)";
 
     public Calculator()
     {
@@ -22,25 +23,23 @@ public class Calculator
 
     public string[] GetDelimiters()
     {
-        var allDelimiters = _delimiters;
-        if (_customDelimiter != null) { allDelimiters.Add(_customDelimiter); }
-        return allDelimiters.Distinct().ToArray();
+        return _delimiters.Concat(_customDelimiters).Distinct().ToArray();
     }
     public string ParseCustomDelimiter(string inputString)
     {
         var newInputString = inputString;
-        _customDelimiter = null;
+        _customDelimiters.Clear();
         if (inputString.StartsWith("//"))
         {
             var splitString = inputString.Split('\n', 2);
             if (splitString != null && splitString.Length == 2)
             {
                 var customDelimiterPart = splitString[0].Substring(2);
-                var r = Regex.Match(customDelimiterPart, CustomDelimiterRegex);
-                if(r.Success)
-                {
-                    _customDelimiter = r.Captures.FirstOrDefault()?.Value.Trim(['[',']']);
-                }
+                var r = Regex.Matches(customDelimiterPart, CustomDelimiterRegex);
+                _customDelimiters.AddRange(
+                    r.Where(x => x.Success && !string.IsNullOrWhiteSpace(x.Value))
+                    .Select(y => y.Value.Trim(['[', ']']))
+                );
                 newInputString = splitString[1];
             }
         }
@@ -88,6 +87,8 @@ public class Calculator
 
     private int RunOperation(List<int> inputNumbers)
     {
+        var sum = inputNumbers.Sum();
+        Console.WriteLine($"Formula: {string.Join("+", inputNumbers)} = {sum}");
         return inputNumbers.Sum();
     }
 }
