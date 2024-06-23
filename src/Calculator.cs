@@ -16,11 +16,22 @@ public class Calculator
         var result = inputString.Split(_delimiters.ToArray());
         var index = 0;
 
+        var hasNegativeNumbers = false;
+        var negativeNumbers = new List<int>();
+
         foreach (var item in result)
         {
             if(int.TryParse(item, out var parsedInt))
             {
-                parsedInts.Add(parsedInt);
+                if (parsedInt < 0)
+                {
+                    hasNegativeNumbers = true;
+                    negativeNumbers.Add(parsedInt);
+                }
+                else
+                {
+                    parsedInts.Add(parsedInt);
+                }
             }
             else
             {
@@ -30,6 +41,7 @@ public class Calculator
             index++;
         }
 
+        if(hasNegativeNumbers) { throw new ArgumentOutOfRangeException(message: $"Input string contains the following invalid negative numbers: {string.Join(',', negativeNumbers)}", innerException: null); }
         return parsedInts;
     }
 
