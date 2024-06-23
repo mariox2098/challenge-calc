@@ -1,6 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 public class Calculator
 {
+    private List<char> _delimiters = ['\n', ','];
+
     public Calculator() { }
     public int Calculate(string inputString) {
         var numbers = ParseStringToNumbers(inputString);
@@ -11,7 +13,7 @@ public class Calculator
     private List<int> ParseStringToNumbers(string inputString)
     {
         var parsedInts = new List<int>();   
-        var result = inputString.Split(',');
+        var result = inputString.Split(_delimiters.ToArray());
         var index = 0;
 
         foreach (var item in result)
