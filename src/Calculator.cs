@@ -3,7 +3,10 @@ public class Calculator
 {
     private List<char> _delimiters = ['\n', ','];
 
-    public Calculator() { }
+    public Calculator() { 
+    
+    }
+
     public int Calculate(string inputString) {
         var numbers = ParseStringToNumbers(inputString);
         var output = RunOperation(numbers);
@@ -27,6 +30,10 @@ public class Calculator
                 {
                     hasNegativeNumbers = true;
                     negativeNumbers.Add(parsedInt);
+                }
+                else if (parsedInt > 1000)
+                {
+                    parsedInts.Add(0);
                 }
                 else
                 {
