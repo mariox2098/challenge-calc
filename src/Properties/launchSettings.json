@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ChallengeCalc": {
+      "commandName": "Project",
+      "commandLineArgs": "AltDelimeter=\"&\"\r\nDenyNegative=false\r\nUpperNumBound=1500\r\nOperation=+"
+    }
+  }
+}

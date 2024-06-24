@@ -1,10 +1,28 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.Extensions.Configuration;
 
 Console.WriteLine("--- Challenge Calculator ---\n");
 var calculator = new Calculator();
 
+var configuration = new ConfigurationBuilder()
+   .AddCommandLine(args)
+   .Build();
+
+calculator.SetOperation(configuration.GetSection("Operation").Value);
+calculator.SetAltDelimiter(configuration.GetSection("AltDelimeter").Value);
+
+if(bool.TryParse(configuration.GetSection("DenyNegative").Value, out var denyNegative))
+{
+    calculator.SetDenyNegative(denyNegative);
+}
+
+if (int.TryParse(configuration.GetSection("UpperNumBound").Value, out var upperBound))
+{
+    calculator.SetUpperNumBound(upperBound);
+}
+
 var inputs = new List<string>
 {
+    "-5,-6,343,1200",
     "20",
     "1,5000",
     "5,tytyt",

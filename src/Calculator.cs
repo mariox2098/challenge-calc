@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Linq;
 
 public class Calculator
@@ -7,18 +6,51 @@ public class Calculator
     private List<string> _delimiters = ["\n", ","];
     private List<string> _customDelimiters = [];
     private readonly string CustomDelimiterRegex = @"(?:\[(.+?)\]+)|(.*)";
+    private int _upperBound = 1000;
+    private bool _denyNegative = true;
+    private string _operation = "+";
+    private List<string> AllowedOperations = ["+", "-", "*", "/"];
 
-    public Calculator()
+    public Calculator() { }
+
+    public void SetOperation(string? operation)
     {
+        if (!string.IsNullOrWhiteSpace(operation) && AllowedOperations.Contains(operation))
+        {
+            _operation = operation;
+        }
+    }
 
+    public void SetAltDelimiter(string? altDelimiter)
+    {
+        if (!string.IsNullOrWhiteSpace(altDelimiter))
+            _delimiters.Add(altDelimiter);
+    }
+
+    public void SetUpperNumBound(int? upperBound)
+    {
+        _upperBound = upperBound ?? _upperBound;
+    }
+
+    public void SetDenyNegative(bool? denyNegative)
+    {
+        _denyNegative = denyNegative ?? _denyNegative;
     }
 
     public int Calculate(string inputString)
     {
-        inputString = ParseCustomDelimiter(inputString);
-        var numbers = ParseStringToNumbers(inputString);
-        var output = RunOperation(numbers);
-        return output;
+        try
+        {
+            inputString = ParseCustomDelimiter(inputString);
+            var numbers = ParseStringToNumbers(inputString);
+            var output = RunOperation(numbers);
+            return output;
+        }
+        catch (DivideByZeroException)
+        {
+            Console.WriteLine("Error: Cannot divide by zero");
+            return 0;
+        }
     }
 
     public string[] GetDelimiters()
@@ -59,12 +91,12 @@ public class Calculator
         {
             if (int.TryParse(item, out var parsedInt))
             {
-                if (parsedInt < 0)
+                if (_denyNegative && parsedInt < 0)
                 {
                     hasNegativeNumbers = true;
                     negativeNumbers.Add(parsedInt);
                 }
-                else if (parsedInt > 1000)
+                else if (parsedInt > _upperBound)
                 {
                     parsedInts.Add(0);
                 }
@@ -87,8 +119,24 @@ public class Calculator
 
     private int RunOperation(List<int> inputNumbers)
     {
-        var sum = inputNumbers.Sum();
-        Console.WriteLine($"Formula: {string.Join("+", inputNumbers)} = {sum}");
+        int result = 0;
+        switch (_operation)
+        {
+            case "+":
+                result = inputNumbers.Aggregate((a, b) => a + b);
+                break;
+            case "-":
+                result = inputNumbers.Aggregate((a, b) => a - b);
+                break;
+            case "*":
+                result = inputNumbers.Aggregate((a, b) => a * b);
+                break;
+            case "/":
+                result = inputNumbers.Aggregate((a, b) => a / b);
+                break;
+        }
+
+        Console.WriteLine($"Formula: {string.Join(_operation, inputNumbers)} = {result}");
         return inputNumbers.Sum();
     }
 }
