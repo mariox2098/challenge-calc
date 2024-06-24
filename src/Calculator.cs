@@ -1,18 +1,20 @@
 ﻿using System.Text.RegularExpressions;
 using System.Linq;
 
-public class Calculator
+public class Calculator : ICalculator
 {
     private List<string> _delimiters = ["\n", ","];
     private List<string> _customDelimiters = [];
-    private readonly string CustomDelimiterRegex = @"(?:\[(.+?)\]+)|(.*)";
     private int _upperBound = 1000;
     private bool _denyNegative = true;
     private string _operation = "+";
-    private List<string> AllowedOperations = ["+", "-", "*", "/"];
+
+    private readonly string CustomDelimiterRegex = @"(?:\[(.+?)\]+)|(.*)";
+    private readonly List<string> AllowedOperations = ["+", "-", "*", "/"];
 
     public Calculator() { }
 
+    public string GetOperation() => _operation;
     public void SetOperation(string? operation)
     {
         if (!string.IsNullOrWhiteSpace(operation) && AllowedOperations.Contains(operation))
@@ -21,17 +23,23 @@ public class Calculator
         }
     }
 
+    public string[] GetDelimiters()
+    {
+        return _delimiters.Concat(_customDelimiters).Distinct().ToArray();
+    }
     public void SetAltDelimiter(string? altDelimiter)
     {
         if (!string.IsNullOrWhiteSpace(altDelimiter))
             _delimiters.Add(altDelimiter);
     }
 
+    public int GetUpperNumBound() => _upperBound;
     public void SetUpperNumBound(int? upperBound)
     {
         _upperBound = upperBound ?? _upperBound;
     }
 
+    public bool GetDenyNegative() => _denyNegative;
     public void SetDenyNegative(bool? denyNegative)
     {
         _denyNegative = denyNegative ?? _denyNegative;
@@ -53,10 +61,7 @@ public class Calculator
         }
     }
 
-    public string[] GetDelimiters()
-    {
-        return _delimiters.Concat(_customDelimiters).Distinct().ToArray();
-    }
+   
     public string ParseCustomDelimiter(string inputString)
     {
         var newInputString = inputString;
@@ -71,6 +76,7 @@ public class Calculator
                 _customDelimiters.AddRange(
                     r.Where(x => x.Success && !string.IsNullOrWhiteSpace(x.Value))
                     .Select(y => y.Value.Trim(['[', ']']))
+                    .Where(z => !string.IsNullOrWhiteSpace(z))
                 );
                 newInputString = splitString[1];
             }
@@ -137,6 +143,6 @@ public class Calculator
         }
 
         Console.WriteLine($"Formula: {string.Join(_operation, inputNumbers)} = {result}");
-        return inputNumbers.Sum();
+        return result;
     }
 }
